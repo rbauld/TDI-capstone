@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Reg's TDI project</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+{{ js_resources|indent(4)|safe }}
+
+{{ css_resources|indent(4)|safe }}
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container">
+
+    <div class="docs-section">
+      <H1>Teaching a neural network to trade</H1>
+
+      <H4>Introduction</H4>
+      <p>Welcome to my TDI capstone project! In my project the main goal is to teach a neural network how to trade!
+      Specifically I am teaching it to trade on the BTC-LTC crypto-currency market. The general approach is not limited
+        to this market and can in theory be used to trade on any market. Once a suitable data set is collected the network
+        can then be trained to trade on that market.
+      </p>
+
+      <H4>Does it work?</H4>
+      <p>
+        The real answer: Sort of!
+      </p>
+      <p>
+        I am able to get the algorithm to work in testing under certain restrictions. It is able to be profitable when
+        I disable trading fees. Potentially with enough work it might become profitable with trading fees enabled at which
+        point it may be worthwhile to try in a live market.
+      </p>
+      <p>
+        The algorithm runs under several assumptions. The biggest one is that it trades a small enough quantity of currency
+        such that market prices remain undisturbed by its trading actions. This will only ever be approximately true, but
+        it should hold for small trades in markets with a large market cap.
+      </p>
+      <H4>A word of warning</H4>
+      <p>
+        This algorithm is highly experimental. I do not recommend deploying it with any serious amounts of money.
+        Do so at your own peril.
+      </p>
+
+
+    </div>
+
+
+    <div class="docs-section">
+      <H2>The data set</H2>
+      <p>
+        To teach a neural network to trade we must have some kind of market simulation for it to learn from. Since accurate
+        simulation of a real market is nearly impossible the next best thing we can do is to collect data from an existing
+        market and use that to run our simulation.
+      </p>
+
+      <H3>Collecting the data</H3>
+      <p>
+        The data set was collected by pulling data from a crypto-currency exchange using its provided
+        <a href="https://bittrex.com/home/api">API</a> and subsequently processed and stored in a mongoDB running in a
+        ASW EC2 instance. I am using a python script running as a cron job to to this. This is a hack, but seems
+        to work fairly well so far.
+      </p>
+      <p>
+        Since storage space on AWS is expensive I periodically pull the data down into a local mongoDB where it is
+        subsequently cleaned of any errors and then permanently stored for use in model training. A network diagram of
+        the current setup can be seen below.
+      </p>
+      <figure>
+        <img class="u-max-full-width" align="middle" src="{{ url_for('static', filename='images/Data_Diagram.png') }}">
+        <figcaption> Figure 1: A network diagram of the data collection, storage, and cleaning systems</figcaption>
+      </figure>
+
+      <H3>Data samples</H3>
+      <p>So what does the data look like exactly? Below are a few visualizations of the data set so you can better
+      understand what we are dealing with.</p>
+
+      {{ train_script|indent(4)|safe }}
+      {{ train_div|indent(4)|safe }}
+
+      {{ test_script|indent(4)|safe }}
+      {{ test_div|indent(4)|safe }}
+
+      <p> An important thing to note is that the testing set appears very different in nature that the training data.
+      This may be a problem and we should keep this in mind when interpreting the validation of any models.</p>
+    </div>
+
+    <div class="docs-section">
+      <H2>The model</H2>
+      <p>I am using a 4 layer, fully connected neural network with 30 nodes per layer. The input to the model is simply
+      a collection of various technical indicators that seemed to work well for this market.</p>
+
+      <H3>Model diagram</H3>
+      <figure>
+        <img class="u-max-full-width" align="middle" src="{{ url_for('static', filename='images/Model_Diagram.png') }}">
+        <figcaption> Figure 2: Diagram of the trading model</figcaption>
+      </figure>
+
+      <H3>Model training</H3>
+      <p>
+        I am using a a technique called double DQN learning. This is a state of the art method for training reinforcement learning algorithms.
+        Finding a training method that works can be very difficult. It can take a day or more for the model to fully train so checking
+        hyperparmaters can be very time consuming. In spite of this I have gotten some promising results. Below is a plot of a successful
+        training run.
+      </p>
+
+      {{ model_script|indent(4)|safe }}
+      {{ model_div|indent(4)|safe }}
+
+    </div>
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
