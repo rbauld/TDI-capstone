@@ -26,20 +26,37 @@
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-
 {{ js_resources|indent(4)|safe }}
 
 {{ css_resources|indent(4)|safe }}
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+  <link rel="stylesheet" href="css/github-prettify-theme.css">
+  <script src="{{ url_for('static', filename='js/site.js') }}"></script>
 
 </head>
 <body>
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+      <div class="navbar-spacer"></div>
+    <nav class="navbar">
+      <div class="container">
+        <ul class="navbar-list">
+          <li class="navbar-item"><a class="navbar-link" href="#intro">Intro</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#data">Data</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#model">Model</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#performance">Model Evaluation</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#github">Github</a></li>
+        </ul>
+      </div>
+    </nav>
+
+
   <div class="container">
 
-    <div class="docs-section">
+    <div class="docs-section" id="intro">
       <H1>Teaching a neural network to trade</H1>
 
       <H4>Introduction</H4>
@@ -73,7 +90,7 @@
     </div>
 
 
-    <div class="docs-section">
+    <div class="docs-section" id="data">
       <H2>The data set</H2>
       <p>
         To teach a neural network to trade we must have some kind of market simulation for it to learn from. Since accurate
@@ -112,7 +129,7 @@
       This may be a problem and we should keep this in mind when interpreting the validation of any models.</p>
     </div>
 
-    <div class="docs-section">
+    <div class="docs-section" id="model">
       <H2>The model</H2>
       <p>I am using a 4 layer, fully connected neural network with 30 nodes per layer. The input to the model is simply
       a collection of various technical indicators that seemed to work well for this market.</p>
@@ -133,6 +150,53 @@
 
       {{ model_script|indent(4)|safe }}
       {{ model_div|indent(4)|safe }}
+    </div>
+
+    <div class="docs-section" id="performance">
+      <H3>Examining model performance</H3>
+
+      <p>
+        We can get a quick overview of model performance by looking at some statistics of the returns for a set of 2000
+        different trading runs. On the test set the model produces an average return of 1.8% with a standard error of 0.4%.
+        However, the variation in return is exceptionally large. The standard deviation is a whopping 18%.
+        So while the on average return is substantial, the large variance makes investing exceptionally risky.
+
+        To get a better understanding of how the model is operating, lets examine two different trading runs.
+        The first run produces a net return, while the second run produces a loss.
+      </p>
+
+      <H4>Good trading run</H4>
+
+      <p>
+        Below is a successful trading run. The chart shows both price of the commodity and the total coin value held by
+        the algorithm. The regions shaded in green indicate the model is placing a buy order during this time, while the
+        red regions indicate a sell order. We can see a few things be examining this trading run. First that the model
+        seems to biased towards making buy orders. The second is that although the model does appear to dell during market
+        dips, there are also times when it places buy orders during market downturns. So, on the face of it, it appears
+        as if the model is not very optimal.
+      </p>
+
+      {{ p1_script|indent(4)|safe }}
+      {{ p1_div|indent(4)|safe }}
+
+      <H4>Poor trading run</H4>
+
+      <p>
+        In this trading run we see even more startling behavior. The model continues to make purchases even though the market
+        is continually in decline. As a result, the model ends up losing a significant amount of currency.
+      </p>
+
+      {{ p2_script|indent(4)|safe }}
+      {{ p2_div|indent(4)|safe }}
+
+    </div>
+
+    <div class="docs-section" id="github">
+    <H2>Github</H2>
+      <p>
+        The code for this project can be found at my <a href="https://github.com/rbauld/TDI-capstone">github</a>. This includes the website code, as well
+        as the model code in the ./model/ subdirectory.
+      </p>
 
     </div>
   </div>
